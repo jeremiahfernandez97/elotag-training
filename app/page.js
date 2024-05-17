@@ -1,21 +1,21 @@
-import LikeButton from './like-button'
+'use client';
+
+import { useState } from 'react';
+import AddTodo from './add-todo'
+import Todos from './todos'
 
 function Header({ title }) {
-  return <h1>{title ? title : "Default title"}</h1>
+  return <h1>{title}</h1>
 }
 
 export default function HomePage() {
-  const names = ["Ada Lovelace", "Grace Hopper", "Margaret Hamilton"]
+  const [todos, setTodos] = useState([])
 
   return (
-    <div>
-      <Header title="Develop. Preview. Ship." />
-      <ul>
-        {names.map((name) => (
-          <li key={name}>{name}</li>
-        ))}
-      </ul>
-      <LikeButton />
-    </div>
+    <>
+      <Header title="Jopet's Todo App" />
+      <Todos todos={todos} setTodos={setTodos}/>
+      <AddTodo todos={todos} setTodos={setTodos}/>
+    </>
   )
 }
