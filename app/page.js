@@ -14,8 +14,14 @@ export default function HomePage() {
     setTodos([...todos, todo])
   }
 
-  const handleTodo = (key) => {
-    alert(key)
+  const deleteTodo = (id) => {
+    let newTodos = []
+    todos.forEach((todo => {
+      if (todo.id != id) {
+        newTodos.push(todo)
+      }
+    }))
+    setTodos(newTodos)
   }
 
   return (
@@ -29,9 +35,14 @@ export default function HomePage() {
               cursor: "pointer"
             }} 
             key={todo.id}
-            onClick={() => handleTodo(todo.id)}
           >
-              {todo.title}
+              {todo.title} &nbsp; 
+              <span
+                style={{color:"red"}}
+                onClick={() => deleteTodo(todo.id)}
+              >
+              🗑
+              </span>
           </li>
         ))) : (
           <p>no todos</p>
