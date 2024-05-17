@@ -1,4 +1,4 @@
-// File: C:\Users\jerem\projects\kblink nextjs\training2\app\page.js
+// File: C:\Users\jerem\projects\kblink nextjs\training2\app\page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
