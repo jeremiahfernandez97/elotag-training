@@ -1,32 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import AddTodo from './add-todo'
-import Todos from './todos'
-
-type Todo = {
-  id: number;
-  title: string;
-  done: boolean;
-};
-
+import { useState } from "react";
+import AddTodo from "./components/add-todo";
+import Todos from "./components/todos";
+import { Todo } from "./types/todo";
 
 type HeaderProps = {
-  title: string
-}
+  title: string;
+};
 
 function Header({ title }: HeaderProps) {
-  return <h1>{title}</h1>
+  return <h1>{title}</h1>;
 }
 
 export default function HomePage() {
-  const [todos, setTodos] = useState<Todo[]>([])
+  const [todos, setTodos] = useState<Todo[]>([]);
 
   return (
     <>
       <Header title="Jopet's Todo App" />
-      <Todos todos={todos} setTodos={setTodos}/>
-      <AddTodo todos={todos} setTodos={setTodos}/>
+      <Todos todos={todos} setTodos={setTodos} />
+      <AddTodo todos={todos} setTodos={setTodos} />
     </>
-  )
+  );
 }
