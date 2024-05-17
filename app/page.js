@@ -24,25 +24,45 @@ export default function HomePage() {
     setTodos(newTodos)
   }
 
+  const toggleTodo = (id) => {
+    let newTodos = [...todos]
+    newTodos.forEach((todo => {
+      if (todo.id == id) {
+        if (todo.done == false) {
+          todo.done = true
+        } else {
+          todo.done = false
+        }
+      }
+    }))
+    setTodos(newTodos)
+  }
+
   return (
     <>
       <Header title="Jopet's Todo App" />
       <ul>
         {todos.length != 0 ? (todos.map((todo) => (
-          <li 
-            style={{
-              textDecoration: todo.done == true ? "line-through" : "none",
-              cursor: "pointer"
-            }} 
-            key={todo.id}
-          >
+          <li>
+            <span
+              style={{
+                textDecoration: todo.done == true ? "line-through" : "none",
+                cursor: "pointer"
+              }}
+              onClick={() => toggleTodo(todo.id)}
+              key={todo.id}
+            >
               {todo.title} &nbsp; 
-              <span
-                style={{color:"red"}}
-                onClick={() => deleteTodo(todo.id)}
-              >
-              🗑
-              </span>
+            </span>
+            <span
+              style={{
+                color:"red",
+                cursor: "pointer"
+              }}
+              onClick={() => deleteTodo(todo.id)}
+            >
+            🗑
+            </span>
           </li>
         ))) : (
           <p>no todos</p>
