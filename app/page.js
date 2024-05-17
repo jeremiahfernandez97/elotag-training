@@ -14,17 +14,30 @@ export default function HomePage() {
     setTodos([...todos, todo])
   }
 
+  const handleTodo = (key) => {
+    alert(key)
+  }
+
   return (
-    <div>
+    <>
       <Header title="Jopet's Todo App" />
       <ul>
-        {todos.length != 0 ? (todos.map((name) => (
-          <li key={name}>{name}</li>
+        {todos.length != 0 ? (todos.map((todo) => (
+          <li 
+            style={{
+              textDecoration: todo.done == true ? "line-through" : "none",
+              cursor: "pointer"
+            }} 
+            key={todo.id}
+            onClick={() => handleTodo(todo.id)}
+          >
+              {todo.title}
+          </li>
         ))) : (
-          <>no todos</>
+          <p>no todos</p>
         )}
       </ul>
-      <AddTodo addTodo={addTodo} />
-    </div>
+      <AddTodo addTodo={addTodo} todosLength={todos.length}/>
+    </>
   )
 }

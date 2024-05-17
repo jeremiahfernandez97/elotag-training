@@ -2,15 +2,17 @@
 
 import { useState } from 'react';
 
-export default function AddTodo({ addTodo }) {
+export default function AddTodo({ addTodo, todosLength }) {
   const [todoText, setTodoText] = useState('');
 
   const handleChange = (e) => {
     setTodoText(e.target.value);
   }
   const handleClick = () => {
-    addTodo(todoText)
-    setTodoText('');
+    if (todoText.trim() != "") {
+        addTodo({"id": todosLength, "title": todoText.trim(), "done" : false})
+        setTodoText('');
+    }
   }
 
   return (
