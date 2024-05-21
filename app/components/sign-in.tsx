@@ -1,12 +1,11 @@
 
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { useRouter } from 'next/navigation';
 import { useState } from "react";
 import { app } from "../../firebase/firebase";
 
 const auth = getAuth(app);
 
-export default function SignIn() {
+export default function SignIn({ setLoggedUser }: any ) {
 	const [email, setEmail] =  useState('');
 	const [password, setPassword] =  useState('');
   const [message, setMessage] = useState('');
@@ -23,18 +22,10 @@ export default function SignIn() {
         signIn(email, password);
 	};
 
-  const router = useRouter();
-  
-  const redirectSignin = (user: string | null) => router.push('/todo/' + user)
-
   const signIn = (email: string, password: string) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        // ...
-
-        redirectSignin(user.email);
+        setLoggedUser(userCredential.user.email);
       })
       .catch((error) => {
         const errorCode = error.code;
