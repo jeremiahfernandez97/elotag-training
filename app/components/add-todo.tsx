@@ -3,20 +3,34 @@
 import { useState } from "react";
 import { useCallback } from "react";
 import { Todo } from "../types/todo";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
 
 type TodosProps = {
   todos: Todo[];
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
+  loggedUser: string;
+  setMessage:  React.Dispatch<React.SetStateAction<string>>;
 };
 
-export default function AddTodo({ todos, setTodos }: TodosProps) {
+export default function AddTodo({ todos, setTodos, loggedUser, setMessage }: TodosProps) {
   const [todoText, setTodoText] = useState("");
+
+  async function addToTodosDb(todo: Todo) {
+    try {
+      const docRef = await addDoc(collection(db, "todos"), todo);
+      setMessage("Document added successfully " + docRef);
+      setTodos([...todos, todo]);
+    } catch (e) {
+      setMessage("Error adding document: " + e);
+    }
+  }
 
   const addTodo = useCallback(
     (todo: Todo) => {
-      setTodos([...todos, todo]);
+      addToTodosDb(todo);
     },
-    [todos, setTodos],
+    [todos, setTodos, addToTodosDb],
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,10 +38,10 @@ export default function AddTodo({ todos, setTodos }: TodosProps) {
   };
   const handleClick = useCallback(() => {
     if (todoText.trim() != "") {
-      addTodo({ id: todos.length, title: todoText.trim(), done: false });
+      addTodo({ id: todos.length, title: todoText.trim(), done: false, user: loggedUser});
       setTodoText("");
     }
-  }, [addTodo, todoText, todos.length]);
+  }, [addTodo, todoText, todos.length, loggedUser]);
 
   return (
     <>
