@@ -2,6 +2,9 @@
 
 import { useCallback } from "react";
 import { Todo } from "../types/todo";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../firebase/firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 type TodosProps = {
   todos: Todo[];
@@ -28,7 +31,8 @@ export default function Todos({ todos, setTodos }: TodosProps) {
       newTodos.forEach((todo) => {
         if (todo.id == id) {
           if (todo.done == false) {
-            todo.done = true;
+            const todoRef = collection(db, "todos");
+            const q = query(todoRef, where("state", ">=", "CA"), where("population", ">", 100000));
           } else {
             todo.done = false;
           }
