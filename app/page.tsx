@@ -1,61 +1,28 @@
 "use client";
 
-import SignUp from "./components/sign-up";
-import SignIn from "./components/sign-in";
-import AddTodo from "./components/add-todo";
-import Todos from "./components/todos";
-import { Todo } from "./types/todo";
-import { useState, useCallback } from "react";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../firebase/firebase";
-
+import React, { useCallback } from "react"
+import { useRouter } from "next/navigation"
+import SignUp from "./components/sign-up"
 
 export default function HomePage() {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [loggedUser, setLoggedUser] = useState("");
-  const [message, setMessage] = useState("");
+  const router = useRouter();
 
-  const q = query(collection(db, "todos"), where("user", "==", loggedUser));
+  // if(loading) {
+  //   return <div>Loading</div>
+  // }
 
-  const getQuerySnapshot = useCallback(async () => {
-    const querySnapshot = await getDocs(q);
-    let queriedTodos: Todo[] = [];
-    querySnapshot.forEach((doc) => {
-      queriedTodos.push({
-        id: doc.data().id,
-        title: doc.data().title,
-        done: doc.data().done,
-        user: doc.data().user
-      })
-    });
-    setTodos(queriedTodos);
-  }, [q])
+  // if(error) {
+  //   return <div>{error.message}</div>
+  // }
 
-  if (loggedUser == "") {
-    return (
-      <>
-        Sign Up form:
-        <br />
-        <SignUp />
-        <br />
-        <br />
-        Sign In form:
-        <br />
-        <SignIn setLoggedUser={setLoggedUser} />
-      </>
-    );
-  } else {
-    getQuerySnapshot();
-    return (
-      <>
-        <h3>
-          Welcome, {loggedUser}
-          <br />
-        </h3>
-        <Todos todos={todos} setTodos={setTodos} />
-        <AddTodo todos={todos} setTodos={setTodos} loggedUser={loggedUser} setMessage={setMessage}/>
-      <div style={{ textDecoration: "italic" }}>{message}</div>
-      </>
-    );
-  }
+  const handleLoginClick = useCallback(() => {
+    router.push("/login")
+  }, [router]);
+
+  return <>
+    <SignUp />
+    <br/>
+    <div><button onClick={handleLoginClick}>or Login to continue</button></div>
+  </>
 }
+  

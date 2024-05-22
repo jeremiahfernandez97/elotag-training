@@ -1,5 +1,8 @@
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
+"use client"
+
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation"
 import { app, db } from "../../firebase/firebase";
 import { collection, addDoc } from "firebase/firestore";
 
@@ -9,6 +12,7 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const router = useRouter();
 
   const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -34,11 +38,27 @@ export default function SignUp() {
     }
   }
 
+  const navigateToTodo = useCallback(() => {
+    router.push("/todo")
+  }, [router])
+
   const signUp = (email: string, password: string) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
         addToUsersDb(user);
+        
+        signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          navigateToTodo()
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+
+          setMessage(errorCode + ": " + errorMessage);
+          // ..
+        });
       })
       .catch((error) => {
         const errorCode = error.code;
