@@ -5,9 +5,12 @@ import AddTodo from "../components/add-todo";
 import Todos from "../components/todos";
 import { Todo } from "../types/todo";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db, auth } from "../../firebase/firebase";
+import { app, db } from "../../firebase/firebase";
 import { useRouter } from "next/navigation"
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+const auth = getAuth(app);
 
 export default function HomePage() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -18,9 +21,9 @@ export default function HomePage() {
   const handleSignOut = useCallback(async () => {
     await auth.signOut()
     console.log(user);
-  }, [auth, user]);
+  }, [user]);
 
-  const getQuerySnapshot = async () => {
+  const getQuerySnapshot = useCallback(async () => {
     if(user?.email) {
       const q = query(collection(db, "todos"), where("user", "==", user?.email));
       const querySnapshot = await getDocs(q);
@@ -35,17 +38,19 @@ export default function HomePage() {
       });
       setTodos(queriedTodos);
     }
-  }
+  }, [user?.email])
 
-  // useEffect(() => {
+  useEffect(() => {
     getQuerySnapshot()
-  // }, [user])
+  }, [getQuerySnapshot])
 
   console.log("rendering homepage");
 
-  if(!user) {
-    router.push("/")
-  }
+  onAuthStateChanged(auth, (user) => {
+    if(!user) {
+      router.push("/")
+    }
+  })
 
   return (
     <>

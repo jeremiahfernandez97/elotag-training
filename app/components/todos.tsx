@@ -3,8 +3,11 @@
 import { useCallback } from "react";
 import { Todo } from "../types/todo";
 import { doc, updateDoc } from "firebase/firestore";
-import { db, auth } from "../../firebase/firebase";
+import { app, db } from "../../firebase/firebase";
 import { collection, query, where, getDocs, deleteDoc } from "firebase/firestore";
+import { getAuth, } from "firebase/auth";
+
+const auth = getAuth(app);
 
 type TodosProps = {
   todos: Todo[];
@@ -15,6 +18,7 @@ export default function Todos({ todos, setTodos }: TodosProps) {
   const user = auth?.currentUser;
 
   const deleteTodo = useCallback(async (id: number) => {
+    // update db
     const todoRef = collection(db, "todos");
     const q = query(todoRef, where("user", "==", user?.email), where("id", "==", id));
     const querySnapshot = await getDocs(q);
@@ -22,9 +26,19 @@ export default function Todos({ todos, setTodos }: TodosProps) {
       const todoDocRef = doc(db, "todos", docSnapshot.id);
       await deleteDoc(todoDocRef);   
     });
-  },[user?.email]);
+
+    // update state
+    let newTodos: Todo[] = [];
+    todos.forEach((todo) => {
+      if (todo.id != id) {
+        newTodos.push(todo);
+      }
+    });
+    setTodos(newTodos);
+  },[user?.email, todos, setTodos]);
 
   const toggleTodo = useCallback(async (id: number) => {
+    // update db
     const todoRef = collection(db, "todos");
     const q = query(todoRef, where("user", "==", user?.email), where("id", "==", id));
     const querySnapshot = await getDocs(q);
@@ -41,7 +55,20 @@ export default function Todos({ todos, setTodos }: TodosProps) {
         });
       }
     });      
-  },[user?.email]);
+
+    // update state
+    let newTodos = [...todos];
+    newTodos.forEach((todo) => {
+      if (todo.id == id) {
+        if (todo.done == false) {
+          todo.done = true;
+        } else {
+          todo.done = false;
+        }
+      }
+    });
+    setTodos(newTodos);
+  },[user?.email, todos, setTodos]);
 
 return (
   <ul>

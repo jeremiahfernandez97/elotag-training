@@ -4,7 +4,10 @@ import { useState } from "react";
 import { useCallback } from "react";
 import { Todo } from "../types/todo";
 import { collection, addDoc } from "firebase/firestore";
-import { db, auth } from "../../firebase/firebase";
+import { app, db } from "../../firebase/firebase";
+import { getAuth } from "firebase/auth";
+
+const auth = getAuth(app);
 
 type TodosProps = {
   todos: Todo[];
@@ -16,7 +19,7 @@ export default function AddTodo({ todos, setTodos, setMessage }: TodosProps) {
   const [todoText, setTodoText] = useState("");
   const user = auth?.currentUser
 
-  async function addToTodosDb(todo: Todo) {
+  const addToTodosDb = useCallback(async (todo: Todo) => {
     try {
       const docRef = await addDoc(collection(db, "todos"), todo);
       setMessage("Document added successfully " + docRef);
@@ -24,13 +27,13 @@ export default function AddTodo({ todos, setTodos, setMessage }: TodosProps) {
     } catch (e) {
       setMessage("Error adding document: " + e);
     }
-  }
+  }, [setMessage, setTodos, todos])
 
   const addTodo = useCallback(
     (todo: Todo) => {
       addToTodosDb(todo);
     },
-    [todos, setTodos, addToTodosDb],
+    [addToTodosDb],
   );
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
