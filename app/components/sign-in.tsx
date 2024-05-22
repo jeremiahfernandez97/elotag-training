@@ -1,13 +1,16 @@
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
-import { app } from "../../firebase/firebase";
+"use client"
 
-const auth = getAuth(app);
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { useCallback, useState } from "react";
+import { app, auth} from "../../firebase/firebase";
+import { useRouter } from "next/navigation"
 
-export default function SignIn({ setLoggedUser }: any) {
+
+export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const router = useRouter();
 
   const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -21,10 +24,14 @@ export default function SignIn({ setLoggedUser }: any) {
     signIn(email, password);
   };
 
+  const navigateToHomePage = useCallback(() => {
+    router.push("/")
+  }, [router])
+
   const signIn = (email: string, password: string) => {
     signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        setLoggedUser(userCredential.user.email);
+      .then(() => {
+        navigateToHomePage()
       })
       .catch((error) => {
         const errorCode = error.code;

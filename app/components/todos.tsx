@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { Todo } from "../types/todo";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebase/firebase";
+import { db, auth } from "../../firebase/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 type TodosProps = {
@@ -12,6 +12,7 @@ type TodosProps = {
 };
 
 export default function Todos({ todos, setTodos }: TodosProps) {
+  const user = auth?.currentUser;
   const deleteTodo = useCallback(
     (id: number) => {
       let newTodos: Todo[] = [];
@@ -25,23 +26,12 @@ export default function Todos({ todos, setTodos }: TodosProps) {
     [todos, setTodos],
   );
 
-  const toggleTodo = useCallback(
-    (id: number) => {
-      let newTodos = [...todos];
-      newTodos.forEach((todo) => {
-        if (todo.id == id) {
-          if (todo.done == false) {
-            const todoRef = collection(db, "todos");
-            const q = query(todoRef, where("state", ">=", "CA"), where("population", ">", 100000));
-          } else {
-            todo.done = false;
-          }
-        }
-      });
-      setTodos(newTodos);
-    },
-    [todos, setTodos],
-  );
+  const toggleTodo = useCallback((id: number) => {
+      const todoRef = collection(db, "todos");
+      const q = query(todoRef, where("user", "==", user?.email), where("id", "==", id));
+      // setTodos(newTodos);
+      console.log(q);
+    },[]);
 
   return (
     <ul>

@@ -4,17 +4,17 @@ import { useState } from "react";
 import { useCallback } from "react";
 import { Todo } from "../types/todo";
 import { collection, addDoc } from "firebase/firestore";
-import { db } from "../../firebase/firebase";
+import { db, auth } from "../../firebase/firebase";
 
 type TodosProps = {
   todos: Todo[];
   setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  loggedUser: string;
   setMessage:  React.Dispatch<React.SetStateAction<string>>;
 };
 
-export default function AddTodo({ todos, setTodos, loggedUser, setMessage }: TodosProps) {
+export default function AddTodo({ todos, setTodos, setMessage }: TodosProps) {
   const [todoText, setTodoText] = useState("");
+  const user = auth?.currentUser
 
   async function addToTodosDb(todo: Todo) {
     try {
@@ -38,10 +38,10 @@ export default function AddTodo({ todos, setTodos, loggedUser, setMessage }: Tod
   };
   const handleClick = useCallback(() => {
     if (todoText.trim() != "") {
-      addTodo({ id: todos.length, title: todoText.trim(), done: false, user: loggedUser});
+      addTodo({ id: todos.length, title: todoText.trim(), done: false, user: user?.email ?? ""});
       setTodoText("");
     }
-  }, [addTodo, todoText, todos.length, loggedUser]);
+  }, [addTodo, todoText, todos.length, user?.email]);
 
   return (
     <>

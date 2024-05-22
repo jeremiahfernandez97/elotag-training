@@ -1,61 +1,76 @@
 "use client";
 
-import SignUp from "./components/sign-up";
-import SignIn from "./components/sign-in";
+import React, { useEffect, useCallback, useState, useMemo } from "react"
 import AddTodo from "./components/add-todo";
 import Todos from "./components/todos";
 import { Todo } from "./types/todo";
-import { useState, useCallback } from "react";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../firebase/firebase";
-
+import { db, auth } from "../firebase/firebase";
+import { useRouter } from "next/navigation"
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 export default function HomePage() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [loggedUser, setLoggedUser] = useState("");
   const [message, setMessage] = useState("");
+  const router = useRouter();
+  const [user, loading, error]  = useAuthState(auth)
 
-  const q = query(collection(db, "todos"), where("user", "==", loggedUser));
+  // if(loading) {
+  //   return <div>Loading</div>
+  // }
+
+  // if(error) {
+  //   return <div>{error.message}</div>
+  // }
+
+  const handleLoginClick = useCallback(() => {
+    router.push("/login")
+  }, [router]);
+
+  const handleSignOut = useCallback(async () => {
+    await auth.signOut()
+    console.log(user);
+  }, [auth, user]);
+
+  if(!user) {
+    return <div><button onClick={handleLoginClick}>Login to continue</button></div>
+  }
+
 
   const getQuerySnapshot = useCallback(async () => {
-    const querySnapshot = await getDocs(q);
-    let queriedTodos: Todo[] = [];
-    querySnapshot.forEach((doc) => {
-      queriedTodos.push({
-        id: doc.data().id,
-        title: doc.data().title,
-        done: doc.data().done,
-        user: doc.data().user
-      })
-    });
-    setTodos(queriedTodos);
-  }, [q])
+    if(user?.email) {
+      const q = query(collection(db, "todos"), where("user", "==", user?.email));
+      const querySnapshot = await getDocs(q);
+      let queriedTodos: Todo[] = [];
+      querySnapshot.forEach((doc) => {
+        queriedTodos.push({
+          id: doc.data().id,
+          title: doc.data().title,
+          done: doc.data().done,
+          user: doc.data().user
+        })
+      });
+      setTodos(queriedTodos);
+    }
+  }, [user])
 
-  if (loggedUser == "") {
-    return (
-      <>
-        Sign Up form:
+  useEffect(() => {
+    getQuerySnapshot()
+  }, [user])
+
+  console.log("rendering homepage");
+
+  return (
+    <>
+      <h3>
+        Welcome, {user?.email}
         <br />
-        <SignUp />
-        <br />
-        <br />
-        Sign In form:
-        <br />
-        <SignIn setLoggedUser={setLoggedUser} />
-      </>
-    );
-  } else {
-    getQuerySnapshot();
-    return (
-      <>
-        <h3>
-          Welcome, {loggedUser}
-          <br />
-        </h3>
-        <Todos todos={todos} setTodos={setTodos} />
-        <AddTodo todos={todos} setTodos={setTodos} loggedUser={loggedUser} setMessage={setMessage}/>
+      </h3>
+      <Todos todos={todos} setTodos={setTodos} />
+      <AddTodo todos={todos} setTodos={setTodos} setMessage={setMessage}/>
       <div style={{ textDecoration: "italic" }}>{message}</div>
-      </>
-    );
-  }
+      <div><button onClick={handleSignOut}>Signout</button></div>
+    </>
+  );
 }
+  

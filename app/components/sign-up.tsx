@@ -1,3 +1,5 @@
+"use client"
+
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { app, db } from "../../firebase/firebase";
