@@ -24,14 +24,14 @@ export default function SignIn() {
     signIn(email, password);
   };
 
-  const navigateToHomePage = useCallback(() => {
-    router.push("/")
+  const navigateToTodo = useCallback(() => {
+    router.push("/todo")
   }, [router])
 
   const signIn = (email: string, password: string) => {
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
-        navigateToHomePage()
+        navigateToTodo()
       })
       .catch((error) => {
         const errorCode = error.code;

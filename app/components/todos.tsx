@@ -43,34 +43,34 @@ export default function Todos({ todos, setTodos }: TodosProps) {
     });      
   },[user?.email]);
 
-  return (
-    <ul>
-      {todos.length != 0 ? (
-        todos.map((todo) => (
-          <li key={todo.id}>
-            <span
-              style={{
-                textDecoration: todo.done == true ? "line-through" : "none",
-                cursor: "pointer",
-              }}
-              onClick={() => toggleTodo(todo.id)}
-            >
-              {todo.title} &nbsp;
-            </span>
-            <span
-              style={{
-                color: "red",
-                cursor: "pointer",
-              }}
-              onClick={() => deleteTodo(todo.id)}
-            >
-              🗑
-            </span>
-          </li>
-        ))
-      ) : (
-        <p>no todos</p>
-      )}
-    </ul>
-  );
+return (
+  <ul>
+    {todos.length != 0 ? (
+      todos.map((todo) => (
+        <li key={todo.id}>
+          <span
+            style={{
+              textDecoration: todo.done == true ? "line-through" : "none",
+              cursor: "pointer",
+            }}
+            onClick={() => toggleTodo(todo.id)}
+          >
+            {todo.title} &nbsp;
+          </span>
+          <span
+            style={{
+              color: "red",
+              cursor: "pointer",
+            }}
+            onClick={() => deleteTodo(todo.id)}
+          >
+            🗑
+          </span>
+        </li>
+      ))
+    ) : (
+      <p>no todos</p>
+    )}
+  </ul>
+);
 }
