@@ -37,7 +37,7 @@ export default function HomePage() {
   }
 
 
-  const getQuerySnapshot = useCallback(async () => {
+  const getQuerySnapshot = async () => {
     if(user?.email) {
       const q = query(collection(db, "todos"), where("user", "==", user?.email));
       const querySnapshot = await getDocs(q);
@@ -52,13 +52,13 @@ export default function HomePage() {
       });
       setTodos(queriedTodos);
     }
-  }, [user])
+  }
 
-  useEffect(() => {
+  // useEffect(() => {
     getQuerySnapshot()
-  }, [user])
+  // }, [user])
 
-  console.log("rendering homepage");
+  // console.log("rendering homepage");
 
   return (
     <>
