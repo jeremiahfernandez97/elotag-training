@@ -96,7 +96,7 @@ return (
         </li>
       ))
     ) : (
-      <p>no todos</p>
+      <p>Empty, add todo to begin</p>
     )}
   </ul>
 );

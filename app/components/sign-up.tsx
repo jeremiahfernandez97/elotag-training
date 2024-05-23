@@ -5,6 +5,14 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation"
 import { app, db } from "../../firebase/firebase";
 import { collection, addDoc } from "firebase/firestore";
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Heading,
+  useToast
+} from '@chakra-ui/react'
 
 const auth = getAuth(app);
 
@@ -13,6 +21,7 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
+  const toast = useToast()
 
   const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
@@ -32,9 +41,23 @@ export default function SignUp() {
         email: user.email,
         uid: user.uid
       });
-      setMessage(user.email + " signed up successfully " + docRef.id);
+      // setMessage(user.email + " signed up successfully " + docRef.id);
+      toast({
+        title: 'Success!',
+        description: user.email + " signed up successfully",
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      })
     } catch (e) {
-      setMessage("Error adding document: " + e);
+      // setMessage("Error adding document: " + e);
+      toast({
+        title: 'Error!',
+        description: "Error adding document: " + e,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      })
     }
   }
 
@@ -56,31 +79,50 @@ export default function SignUp() {
           const errorCode = error.code;
           const errorMessage = error.message;
 
-          setMessage(errorCode + ": " + errorMessage);
+          // setMessage(errorCode + ": " + errorMessage);
+          
+          toast({
+            title: 'Error!',
+            description: errorCode + ": " + errorMessage,
+            status: 'error',
+            duration: 9000,
+            isClosable: true,
+          })
           // ..
         });
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        setMessage(errorCode + ": " + errorMessage);
+        // setMessage(errorCode + ": " + errorMessage);
+          
+        toast({
+          title: 'Error!',
+          description: errorCode + ": " + errorMessage,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        })
       });
   };
 
   return (
     <>
-      <label>
-        Email:
-        <input type="text" value={email} onChange={handleChangeEmail} />
-      </label>
-      <br />
-      <label>
-        Password:
-        <input type="text" value={password} onChange={handleChangePassword} />
-      </label>
-      <br />
-      <div style={{ textDecoration: "italic" }}>{message}</div>
-      <button onClick={handleSignUp}>Sign Up</button>
+      <Heading mb="10">Create your todo list</Heading>
+      <FormControl isRequired>
+        <FormLabel>
+          Email:
+        </FormLabel>
+          <Input type="text" value={email} onChange={handleChangeEmail} mb="10"/>
+      </FormControl>
+      <FormControl isRequired>
+        <FormLabel>
+          Password:
+        </FormLabel>
+          <Input type="password" value={password} onChange={handleChangePassword} mb="10"/>
+      </FormControl>
+        {/* <div>{message}</div> */}
+        <Button onClick={handleSignUp} mb="10">Sign Up</Button>
     </>
   );
 }

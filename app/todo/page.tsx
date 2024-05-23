@@ -9,18 +9,46 @@ import { app, db } from "../../firebase/firebase";
 import { useRouter } from "next/navigation"
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import {
+  Container,
+  Center,
+  Box,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Heading,
+  useToast
+} from '@chakra-ui/react'
 
 const auth = getAuth(app);
 
 export default function HomePage() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [message, setMessage] = useState("");
-  const [user]  = useAuthState(auth);
+  const [user, error]  = useAuthState(auth);
   const router = useRouter();
+  const toast = useToast();
 
   const handleSignOut = useCallback(async () => {
-    await auth.signOut()
-    console.log(user);
+    try {
+      await auth.signOut();
+      toast({
+        title: 'Success!',
+        description: "Signed out",
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      })
+    } catch (e) {
+      toast({
+        title: 'Error!',
+        description: "" + e,
+        status: 'error',
+        duration: 9000,
+        isClosable: true,
+      })
+    }
   }, [user]);
 
   const getQuerySnapshot = useCallback(async () => {
@@ -53,17 +81,44 @@ export default function HomePage() {
     }
   })
 
+  if(!user) {
+    return (
+      <Center>
+        <Container>
+          Loading..
+        </Container>
+      </Center>
+    )
+  }
+
+  if(error) {
+    return (
+      <Center>
+        <Container>
+          Error!
+        </Container>
+      </Center>
+    )
+  }
+
   return (
-    <>
-      <h3>
-        Welcome, {user?.email}
-        <br />
-      </h3>
-      <Todos todos={todos} setTodos={setTodos} />
-      <AddTodo todos={todos} setTodos={setTodos} setMessage={setMessage}/>
-      <div style={{ textDecoration: "italic" }}>{message}</div>
-      <div><button onClick={handleSignOut}>Signout</button></div>
-    </>
+    <Center>
+      <Container>
+        <Heading display="inline">
+          Welcome, {user?.email}
+        </Heading>
+        <Button onClick={handleSignOut}>Sign out</Button>
+        <br/>
+        <br/>
+        <AddTodo todos={todos} setTodos={setTodos} setMessage={setMessage}/>
+  
+        <Container my="10">
+          <Todos todos={todos} setTodos={setTodos} />
+        </Container>
+          
+        {/* <div style={{ textDecoration: "italic" }}>{message}</div> */}
+      </Container>
+    </Center>
   );
 }
   
