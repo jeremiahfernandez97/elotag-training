@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useCallback, useState, useMemo } from 'react'
+import React, { useEffect, useCallback, useState } from 'react'
 import AddTodo from '../components/add-todo'
 import Todos from '../components/todos'
 import { Todo } from '../types/todo'
@@ -12,10 +12,6 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import {
     Container,
     Center,
-    Box,
-    FormControl,
-    FormLabel,
-    Input,
     Button,
     Heading,
     useToast,
@@ -23,7 +19,6 @@ import {
 
 export default function HomePage() {
     const [todos, setTodos] = useState<Todo[]>([])
-    const [message, setMessage] = useState('')
     const auth = getAuth(app)
     const [user, error] = useAuthState(auth)
     const router = useRouter()
@@ -85,22 +80,18 @@ export default function HomePage() {
 
     if (!user) {
         return (
-            <Center>
-                <Container>Loading..</Container>
-            </Center>
+            <Container mt="20">Loading..</Container>
         )
     }
 
     if (error) {
         return (
-            <Center>
-                <Container>Error!</Container>
-            </Center>
+            <Container mt="20">Error!</Container>
         )
     }
 
     return (
-        <Container>
+        <Container mt="20">
             <Heading mb="3">Welcome, {user?.email}</Heading>
             <Button mb="10" variant="link" onClick={handleSignOut}>
                 Sign out
@@ -108,8 +99,6 @@ export default function HomePage() {
             <AddTodo
                 todos={todos}
                 setTodos={setTodos}
-                setMessage={setMessage}
-                mb="10"
             />
             <Todos todos={todos} setTodos={setTodos} />
 
