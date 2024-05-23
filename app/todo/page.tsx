@@ -36,6 +36,7 @@ export default function HomePage() {
           user: doc.data().user
         })
       });
+      queriedTodos.sort((a, b) => a.id - b.id);
       setTodos(queriedTodos);
     }
   }, [user?.email])
