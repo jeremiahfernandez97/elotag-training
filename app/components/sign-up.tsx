@@ -1,86 +1,142 @@
-"use client"
+'use client'
 
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation"
-import { app, db } from "../../firebase/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import {
+    getAuth,
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+} from 'firebase/auth'
+import { useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import { app, db } from '../../firebase/firebase'
+import { collection, addDoc } from 'firebase/firestore'
+import {
+    FormControl,
+    FormLabel,
+    Input,
+    Button,
+    Heading,
+    useToast,
+} from '@chakra-ui/react'
 
-const auth = getAuth(app);
+const auth = getAuth(app)
 
 export default function SignUp() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const router = useRouter();
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [message, setMessage] = useState('')
+    const router = useRouter()
+    const toast = useToast()
 
-  const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(event.target.value);
-  };
-
-  const handleChangePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(event.target.value);
-  };
-
-  const handleSignUp = () => {
-    signUp(email, password);
-  };
-
-  async function addToUsersDb(user: any) {
-    try {
-      const docRef = await addDoc(collection(db, "users"), {
-        email: user.email,
-        uid: user.uid
-      });
-      setMessage(user.email + " signed up successfully " + docRef.id);
-    } catch (e) {
-      setMessage("Error adding document: " + e);
+    const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setEmail(event.target.value)
     }
-  }
 
-  const navigateToTodo = useCallback(() => {
-    router.push("/todo")
-  }, [router])
+    const handleChangePassword = (
+        event: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        setPassword(event.target.value)
+    }
 
-  const signUp = (email: string, password: string) => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        addToUsersDb(user);
-        
-        signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          navigateToTodo()
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
+    const handleSignUp = () => {
+        signUp(email, password)
+    }
 
-          setMessage(errorCode + ": " + errorMessage);
-          // ..
-        });
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        setMessage(errorCode + ": " + errorMessage);
-      });
-  };
+    async function addToUsersDb(user: any) {
+        try {
+            const docRef = await addDoc(collection(db, 'users'), {
+                email: user.email,
+                uid: user.uid,
+            })
+            // setMessage(user.email + " signed up successfully " + docRef.id);
+            toast({
+                title: 'Success!',
+                description: user.email + ' signed up successfully',
+                status: 'success',
+                duration: 9000,
+                isClosable: true,
+            })
+        } catch (e) {
+            // setMessage("Error adding document: " + e);
+            toast({
+                title: 'Error!',
+                description: 'Error adding document: ' + e,
+                status: 'error',
+                duration: 9000,
+                isClosable: true,
+            })
+        }
+    }
 
-  return (
-    <>
-      <label>
-        Email:
-        <input type="text" value={email} onChange={handleChangeEmail} />
-      </label>
-      <br />
-      <label>
-        Password:
-        <input type="text" value={password} onChange={handleChangePassword} />
-      </label>
-      <br />
-      <div style={{ textDecoration: "italic" }}>{message}</div>
-      <button onClick={handleSignUp}>Sign Up</button>
-    </>
-  );
+    const navigateToTodo = useCallback(() => {
+        router.push('/todo')
+    }, [router])
+
+    const signUp = (email: string, password: string) => {
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user
+                addToUsersDb(user)
+
+                signInWithEmailAndPassword(auth, email, password)
+                    .then(() => {
+                        navigateToTodo()
+                    })
+                    .catch((error) => {
+                        const errorCode = error.code
+                        const errorMessage = error.message
+
+                        // setMessage(errorCode + ": " + errorMessage);
+
+                        toast({
+                            title: 'Error!',
+                            description: errorCode + ': ' + errorMessage,
+                            status: 'error',
+                            duration: 9000,
+                            isClosable: true,
+                        })
+                        // ..
+                    })
+            })
+            .catch((error) => {
+                const errorCode = error.code
+                const errorMessage = error.message
+                // setMessage(errorCode + ": " + errorMessage);
+
+                toast({
+                    title: 'Error!',
+                    description: errorCode + ': ' + errorMessage,
+                    status: 'error',
+                    duration: 9000,
+                    isClosable: true,
+                })
+            })
+    }
+
+    return (
+        <>
+            <Heading mb="10">Create your todo list</Heading>
+            <FormControl isRequired>
+                <FormLabel>Email:</FormLabel>
+                <Input
+                    type="text"
+                    value={email}
+                    onChange={handleChangeEmail}
+                    mb="10"
+                />
+            </FormControl>
+            <FormControl isRequired>
+                <FormLabel>Password:</FormLabel>
+                <Input
+                    type="password"
+                    value={password}
+                    onChange={handleChangePassword}
+                    mb="10"
+                />
+            </FormControl>
+            {/* <div>{message}</div> */}
+            <Button onClick={handleSignUp} mb="10">
+                Sign Up
+            </Button>
+        </>
+    )
 }
