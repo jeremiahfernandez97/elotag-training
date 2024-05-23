@@ -23,7 +23,6 @@ const auth = getAuth(app)
 export default function SignUp() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [message, setMessage] = useState('')
     const router = useRouter()
     const toast = useToast()
 
@@ -43,11 +42,10 @@ export default function SignUp() {
 
     async function addToUsersDb(user: any) {
         try {
-            const docRef = await addDoc(collection(db, 'users'), {
+            await addDoc(collection(db, 'users'), {
                 email: user.email,
                 uid: user.uid,
             })
-            // setMessage(user.email + " signed up successfully " + docRef.id);
             toast({
                 title: 'Success!',
                 description: user.email + ' signed up successfully',
@@ -56,7 +54,6 @@ export default function SignUp() {
                 isClosable: true,
             })
         } catch (e) {
-            // setMessage("Error adding document: " + e);
             toast({
                 title: 'Error!',
                 description: 'Error adding document: ' + e,
@@ -84,9 +81,6 @@ export default function SignUp() {
                     .catch((error) => {
                         const errorCode = error.code
                         const errorMessage = error.message
-
-                        // setMessage(errorCode + ": " + errorMessage);
-
                         toast({
                             title: 'Error!',
                             description: errorCode + ': ' + errorMessage,
@@ -94,14 +88,11 @@ export default function SignUp() {
                             duration: 9000,
                             isClosable: true,
                         })
-                        // ..
                     })
             })
             .catch((error) => {
                 const errorCode = error.code
                 const errorMessage = error.message
-                // setMessage(errorCode + ": " + errorMessage);
-
                 toast({
                     title: 'Error!',
                     description: errorCode + ': ' + errorMessage,
@@ -133,7 +124,6 @@ export default function SignUp() {
                     mb="10"
                 />
             </FormControl>
-            {/* <div>{message}</div> */}
             <Button onClick={handleSignUp} mb="10">
                 Sign Up
             </Button>

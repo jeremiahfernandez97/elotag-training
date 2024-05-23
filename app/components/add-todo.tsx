@@ -13,15 +13,11 @@ const auth = getAuth(app)
 type TodosProps = {
     todos: Todo[]
     setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
-    setMessage: React.Dispatch<React.SetStateAction<string>>
-    mb?: string
 }
 
 export default function AddTodo({
     todos,
     setTodos,
-    setMessage,
-    mb,
 }: TodosProps) {
     const [todoText, setTodoText] = useState('')
     const user = auth?.currentUser
@@ -30,18 +26,9 @@ export default function AddTodo({
     const addToTodosDb = useCallback(
         async (todo: Todo) => {
             try {
-                const docRef = await addDoc(collection(db, 'todos'), todo)
-                // setMessage("Document added successfully " + docRef);
-                // toast({
-                //   title: 'Success!',
-                //   description: "Todo added to list",
-                //   status: 'success',
-                //   duration: 9000,
-                //   isClosable: true,
-                // })
+                await addDoc(collection(db, 'todos'), todo)
                 setTodos([...todos, todo])
             } catch (e) {
-                // setMessage("Error adding document: " + e);
                 toast({
                     title: 'Error!',
                     description: '' + e,
