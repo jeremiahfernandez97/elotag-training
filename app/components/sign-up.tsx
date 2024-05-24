@@ -105,6 +105,7 @@ export default function SignUp() {
 
     return (
         <>
+            <Heading color="#2F855A">Hello there!</Heading>
             <Heading mb="10">Create your todo list</Heading>
             <FormControl isRequired>
                 <FormLabel>Email:</FormLabel>
@@ -124,8 +125,8 @@ export default function SignUp() {
                     mb="10"
                 />
             </FormControl>
-            <Button onClick={handleSignUp} mb="10">
-                Sign Up
+            <Button onClick={handleSignUp} mb="10" color="#2F855A">
+                Sign up for an account
             </Button>
         </>
     )

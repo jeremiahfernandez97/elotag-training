@@ -12,6 +12,17 @@ import {
     deleteDoc,
 } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
+import {
+    Box,
+    List,
+    ListItem,
+    ListIcon,
+    OrderedList,
+    UnorderedList,
+    Checkbox
+} from '@chakra-ui/react'
+import { DeleteIcon } from '@chakra-ui/icons'
+import { IconButton } from '@chakra-ui/react'
 
 const auth = getAuth(app)
 
@@ -91,35 +102,40 @@ export default function Todos({ todos, setTodos }: TodosProps) {
     )
 
     return (
-        <ul style={{ listStyleType: 'none' }}>
-            {todos.length != 0 ? (
-                todos.map((todo) => (
-                    <li key={todo.id}>
-                        <span
-                            style={{
-                                color: 'red',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => deleteTodo(todo.id)}
-                        >
-                            ⮾
-                        </span>
-                        &nbsp; &nbsp;
-                        <span
-                            style={{
-                                textDecoration:
-                                    todo.done == true ? 'line-through' : 'none',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => toggleTodo(todo.id)}
-                        >
-                            {todo.title}
-                        </span>
-                    </li>
-                ))
-            ) : (
-                <p>Empty list, add todo to begin</p>
-            )}
-        </ul>
+        <>
+            <UnorderedList styleType="none" m="0">
+                {
+                    todos.length != 0 ? (
+                        todos.map((todo) => (
+                            <ListItem key={todo.id}>
+                                <Checkbox py="2" isChecked={todo.done} onChange={() => toggleTodo(todo.id)}>
+                                    <Box
+                                        style={{
+                                            textDecoration:
+                                                todo.done == true ? 'line-through' : 'none',
+                                            color:
+                                                todo.done == true ? 'grey' : 'black'
+                                        }}
+                                    >
+                                        {todo.title}
+                                    </Box>
+                                </Checkbox>
+                                <Box
+                                    py="1"
+                                    style={{
+                                        cursor: 'pointer',
+                                        float: 'right'
+                                    }}
+                                    onClick={() => deleteTodo(todo.id)}
+                                >
+                                    <IconButton aria-label='Search database' icon={<DeleteIcon />} boxSize={8}/>
+                                </Box>
+                            </ListItem>
+                        ))
+                    ) : (
+                    <i>Empty list, add todo to begin</i>
+                )}
+            </UnorderedList>
+        </>
     )
 }
