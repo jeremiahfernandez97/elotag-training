@@ -73,7 +73,7 @@ export default function HomePage() {
 
     onAuthStateChanged(auth, (user) => {
         if (!user) {
-            router.push('/')
+            router.push('/login')
         }
     })
 
@@ -91,7 +91,7 @@ export default function HomePage() {
 
     return (
         <Container mt="20">
-            <Heading mb="3">Welcome, {user?.email}</Heading>
+            <Heading mb="3" color="#2F855A">Welcome, {user?.email}</Heading>
             <Button mb="10" variant="link" onClick={handleSignOut}>
                 Sign out
             </Button>
@@ -100,7 +100,6 @@ export default function HomePage() {
                 setTodos={setTodos}
             />
             <Todos todos={todos} setTodos={setTodos} />
-
             {/* <div style={{ textDecoration: "italic" }}>{message}</div> */}
         </Container>
     )

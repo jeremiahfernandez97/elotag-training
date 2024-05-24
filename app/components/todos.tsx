@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback } from 'react'
+import React, { useCallback, useState } from 'react'
 import { Todo } from '../types/todo'
 import { doc, updateDoc } from 'firebase/firestore'
 import { app, db } from '../../firebase/firebase'
@@ -12,6 +12,16 @@ import {
     deleteDoc,
 } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
+import {
+    Box,
+    ListItem,
+    UnorderedList,
+    Checkbox
+} from '@chakra-ui/react'
+import { DeleteIcon } from '@chakra-ui/icons'
+import { IconButton } from '@chakra-ui/react'
+import { useDisclosure } from '@chakra-ui/react'
+import ConfirmationModal from '../components/confirmation-modal'
 
 const auth = getAuth(app)
 
@@ -21,7 +31,10 @@ type TodosProps = {
 }
 
 export default function Todos({ todos, setTodos }: TodosProps) {
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const cancelRef = React.useRef()
     const user = auth?.currentUser
+    const [toDelete, setToDelete] = useState(0)
 
     const deleteTodo = useCallback(
         async (id: number) => {
@@ -91,35 +104,41 @@ export default function Todos({ todos, setTodos }: TodosProps) {
     )
 
     return (
-        <ul style={{ listStyleType: 'none' }}>
-            {todos.length != 0 ? (
-                todos.map((todo) => (
-                    <li key={todo.id}>
-                        <span
-                            style={{
-                                color: 'red',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => deleteTodo(todo.id)}
-                        >
-                            ⮾
-                        </span>
-                        &nbsp; &nbsp;
-                        <span
-                            style={{
-                                textDecoration:
-                                    todo.done == true ? 'line-through' : 'none',
-                                cursor: 'pointer',
-                            }}
-                            onClick={() => toggleTodo(todo.id)}
-                        >
-                            {todo.title}
-                        </span>
-                    </li>
-                ))
-            ) : (
-                <p>Empty list, add todo to begin</p>
-            )}
-        </ul>
+        <>
+            <UnorderedList styleType="none" m="0">
+                {
+                    todos.length != 0 ? (
+                        todos.map((todo) => (
+                            <ListItem key={todo.id}>
+                                <Checkbox py="2" isChecked={todo.done} onChange={() => toggleTodo(todo.id)}>
+                                    <Box
+                                        style={{
+                                            textDecoration:
+                                                todo.done == true ? 'line-through' : 'none',
+                                            color:
+                                                todo.done == true ? 'grey' : 'black'
+                                        }}
+                                    >
+                                        {todo.title}
+                                    </Box>
+                                </Checkbox>
+                                <Box
+                                    py="1"
+                                    style={{
+                                        cursor: 'pointer',
+                                        float: 'right'
+                                    }}
+                                    onClick={() => setToDelete(todo.id)}
+                                >
+                                    <IconButton aria-label='Search database' icon={<DeleteIcon />} boxSize={8} onClick={onOpen} colorScheme='red'/>
+                                </Box>
+                            </ListItem>
+                        ))
+                    ) : (
+                    <i>Empty list, add todo to begin</i>
+                )}
+            </UnorderedList>
+            <ConfirmationModal isOpen={isOpen} onClose={onClose} cancelRef={cancelRef}  onConfirm={() => deleteTodo(toDelete)}/>
+        </>
     )
 }

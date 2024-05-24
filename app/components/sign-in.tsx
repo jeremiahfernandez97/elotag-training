@@ -5,6 +5,7 @@ import { useCallback, useState } from 'react'
 import { auth } from '../../firebase/firebase'
 import { useRouter } from 'next/navigation'
 import {
+    Box,
     Container,
     Center,
     FormControl,
@@ -14,6 +15,7 @@ import {
     Heading,
     useToast,
 } from '@chakra-ui/react'
+import { Link } from '@chakra-ui/next-js'
 
 export default function SignIn() {
     const [email, setEmail] = useState('')
@@ -68,28 +70,31 @@ export default function SignIn() {
     return (
         <Center h="90vh">
             <Container textAlign="center">
-                <Heading mb="10">Sign in to your todo list</Heading>
-                <FormControl isRequired>
-                    <FormLabel>Email:</FormLabel>
-                    <Input
-                        type="text"
-                        value={email}
-                        onChange={handleChangeEmail}
-                        mb="10"
-                    />
-                </FormControl>
-                <FormControl isRequired>
-                    <FormLabel>Password:</FormLabel>
-                    <Input
-                        type="password"
-                        value={password}
-                        onChange={handleChangePassword}
-                        mb="10"
-                    />
-                </FormControl>
-                <Button onClick={handleSignIn} mb="10">
-                    Sign In
-                </Button>
+                <Box>
+                    <Heading mb="10">Sign in to your todo list</Heading>
+                    <FormControl isRequired>
+                        <FormLabel>Email:</FormLabel>
+                        <Input
+                            type="text"
+                            value={email}
+                            onChange={handleChangeEmail}
+                            mb="10"
+                        />
+                    </FormControl>
+                    <FormControl isRequired>
+                        <FormLabel>Password:</FormLabel>
+                        <Input
+                            type="password"
+                            value={password}
+                            onChange={handleChangePassword}
+                            mb="10"
+                        />
+                    </FormControl>
+                    <Button onClick={handleSignIn} mb="10">
+                        Sign In
+                    </Button>
+                </Box>
+                <Link href="/">or Sign up for an account</Link>
             </Container>
         </Center>
     )
