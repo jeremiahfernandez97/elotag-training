@@ -73,7 +73,7 @@ export default function HomePage() {
 
     onAuthStateChanged(auth, (user) => {
         if (!user) {
-            router.push('/')
+            router.push('/login')
         }
     })
 
@@ -100,7 +100,6 @@ export default function HomePage() {
                 setTodos={setTodos}
             />
             <Todos todos={todos} setTodos={setTodos} />
-
             {/* <div style={{ textDecoration: "italic" }}>{message}</div> */}
         </Container>
     )
