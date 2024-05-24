@@ -2,7 +2,7 @@
 
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useCallback, useState } from 'react'
-import { app, auth } from '../../firebase/firebase'
+import { auth } from '../../firebase/firebase'
 import { useRouter } from 'next/navigation'
 import {
     Container,
@@ -18,7 +18,6 @@ import {
 export default function SignIn() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [message, setMessage] = useState('')
     const router = useRouter()
     const toast = useToast()
 
