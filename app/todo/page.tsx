@@ -11,7 +11,6 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import {
     Container,
-    Center,
     Button,
     Heading,
     useToast,
