@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { auth } from '../../firebase/firebase'
 import { useRouter } from 'next/navigation'
 import {
@@ -72,8 +72,7 @@ export default function SignIn() {
     const {
         register,
         handleSubmit,
-        formState: { errors },
-        reset,
+        formState: { errors }
     } = useForm({
         resolver: yupResolver(schema),
     })

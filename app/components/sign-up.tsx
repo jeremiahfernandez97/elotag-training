@@ -9,7 +9,7 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
 } from 'firebase/auth'
-import { useState, useCallback } from 'react'
+import { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { app, db } from '../../firebase/firebase'
 import { collection, addDoc } from 'firebase/firestore'
@@ -132,7 +132,6 @@ export default function SignUp() {
         register,
         handleSubmit,
         formState: { errors },
-        reset,
     } = useForm({
         resolver: yupResolver(schema),
     })
