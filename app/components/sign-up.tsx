@@ -71,13 +71,14 @@ export default function SignUp() {
                 isClosable: true,
             })
         } catch (e) {
-            toast({
-                title: 'Error!',
-                description: 'Error adding document: ' + e,
-                status: 'error',
-                duration: 9000,
-                isClosable: true,
-            })
+            // toast({
+            //     title: 'Error!',
+            //     description: 'Error adding document: ' + e,
+            //     status: 'error',
+            //     duration: 9000,
+            //     isClosable: true,
+            // })
+            console.log(e);
         }
     }
 
@@ -96,13 +97,14 @@ export default function SignUp() {
                         navigateToTodo()
                     })
                     .catch((e) => {
-                        toast({
-                            title: 'Error',
-                            description: 'Error on autologin: ' + e,
-                            status: 'error',
-                            duration: 9000,
-                            isClosable: true,
-                        })
+                        // toast({
+                        //     title: 'Error',
+                        //     description: 'Error on autologin: ' + e,
+                        //     status: 'error',
+                        //     duration: 9000,
+                        //     isClosable: true,
+                        // })
+                        console.log(e);
                     })
             })
             .catch((error) => {
@@ -116,7 +118,7 @@ export default function SignUp() {
                     })
                 }
 
-                if ((error.code = 'auth/email-already-in-use')) {
+                if ((error.code == 'auth/email-already-in-use')) {
                     toast({
                         title: 'Error!',
                         description: 'This email address is already in use',
