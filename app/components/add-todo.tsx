@@ -8,10 +8,6 @@ import { getAuth } from 'firebase/auth'
 import { Box, FormControl, Input, Button, useToast } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 
-interface TodoFormData {
-    todo: string
-}
-
 const auth = getAuth(app)
 
 type TodosProps = {
