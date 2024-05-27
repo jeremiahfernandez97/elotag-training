@@ -26,13 +26,14 @@ export default function AddTodo({ todos, setTodos }: TodosProps) {
                 setTodos([...todos, todo])
                 reset()
             } catch (e) {
-                toast({
-                    title: 'Error!',
-                    description: 'Error adding todo: ' + e,
-                    status: 'error',
-                    duration: 9000,
-                    isClosable: true,
-                })
+                // toast({
+                //     title: 'Error!',
+                //     description: 'Error adding todo: ' + e,
+                //     status: 'error',
+                //     duration: 9000,
+                //     isClosable: true,
+                // })
+                console.log(e);
             }
         },
         [setTodos, todos, toast]

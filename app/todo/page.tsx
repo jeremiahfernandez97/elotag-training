@@ -34,13 +34,14 @@ export default function HomePage() {
                 isClosable: true,
             })
         } catch (e) {
-            toast({
-                title: 'Error!',
-                description: 'Error signing out: ' + e,
-                status: 'error',
-                duration: 9000,
-                isClosable: true,
-            })
+            // toast({
+            //     title: 'Error!',
+            //     description: 'Error signing out: ' + e,
+            //     status: 'error',
+            //     duration: 9000,
+            //     isClosable: true,
+            // })
+            console.log(e);
         }
     }, [toast, auth])
 
