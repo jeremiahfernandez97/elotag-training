@@ -9,7 +9,7 @@ import {
   Button
 } from '@chakra-ui/react'
 
-export default function ConfirmationModal({ isOpen, onClose, cancelRef, todo, onConfirm }: any) {
+export default function ConfirmationModal({ isOpen, onClose, cancelRef, onConfirm, action, message }: any) {
 
   return (
     <>
@@ -21,11 +21,11 @@ export default function ConfirmationModal({ isOpen, onClose, cancelRef, todo, on
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize='lg' fontWeight='bold'>
-              Delete {todo}
+              {action}
             </AlertDialogHeader>
 
             <AlertDialogBody>
-              Are you sure? You can&apos;t undo this action afterwards.
+              {message}
             </AlertDialogBody>
 
             <AlertDialogFooter>
@@ -33,7 +33,7 @@ export default function ConfirmationModal({ isOpen, onClose, cancelRef, todo, on
                 Cancel
               </Button>
               <Button colorScheme='red' onClick={() => { onConfirm(); onClose(); }} ml={3}>
-                Delete
+                {action}
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>

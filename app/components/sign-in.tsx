@@ -1,5 +1,9 @@
 'use client'
 
+import React from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useCallback, useState } from 'react'
 import { auth } from '../../firebase/firebase'
@@ -8,6 +12,7 @@ import {
     Box,
     Container,
     Center,
+    FormErrorMessage,
     FormControl,
     FormLabel,
     Input,
@@ -17,23 +22,22 @@ import {
 } from '@chakra-ui/react'
 import { Link } from '@chakra-ui/next-js'
 
+interface SignInFormData {
+    email: string;
+    password: string;
+}
+
+const schema = yup.object().shape({
+  email: yup.string().email().required(),
+  password: yup.string().min(6).max(32).required(),
+});
+
 export default function SignIn() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
     const router = useRouter()
     const toast = useToast()
 
-    const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(event.target.value)
-    }
-
-    const handleChangePassword = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        setPassword(event.target.value)
-    }
-
-    const handleSignIn = () => {
+    const handleSignIn = (formData: SignInFormData) => {
+        const { email, password } = formData;
         signIn(email, password)
     }
 
@@ -53,13 +57,10 @@ export default function SignIn() {
                     isClosable: true,
                 })
             })
-            .catch((error) => {
-                const errorCode = error.code
-                const errorMessage = error.message
-                // setMessage(errorCode + ": " + errorMessage);
+            .catch(() => {
                 toast({
                     title: 'Error!',
-                    description: errorCode + ': ' + errorMessage,
+                    description: 'The username and password you entered is invalid',
                     status: 'error',
                     duration: 9000,
                     isClosable: true,
@@ -67,32 +68,42 @@ export default function SignIn() {
             })
     }
 
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+      resolver: yupResolver(schema),
+    });
+
     return (
         <Center h="90vh">
             <Container textAlign="center">
                 <Box>
                     <Heading mb="10">Sign in to your todo list</Heading>
-                    <FormControl isRequired>
-                        <FormLabel>Email:</FormLabel>
-                        <Input
-                            type="text"
-                            value={email}
-                            onChange={handleChangeEmail}
+                    <form onSubmit={handleSubmit(handleSignIn)}>
+                        <FormControl 
+                            isInvalid={errors.email != undefined}
                             mb="10"
-                        />
-                    </FormControl>
-                    <FormControl isRequired>
-                        <FormLabel>Password:</FormLabel>
-                        <Input
-                            type="password"
-                            value={password}
-                            onChange={handleChangePassword}
+                        >
+                            <FormLabel>Email:</FormLabel>
+                            <Input
+                                {...register("email")}
+                                type="text"
+                            />
+                            <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+                        </FormControl>
+                        <FormControl
+                            isInvalid={errors.password != undefined}
                             mb="10"
-                        />
-                    </FormControl>
-                    <Button onClick={handleSignIn} mb="10">
-                        Sign In
-                    </Button>
+                        >
+                            <FormLabel>Password:</FormLabel>
+                            <Input
+                                {...register("password")}
+                                type="password"
+                            />
+                            <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
+                        </FormControl>
+                        <Button mb="10" type="submit">
+                            Sign In
+                        </Button>
+                    </form>
                 </Box>
                 <Link href="/">or Sign up for an account</Link>
             </Container>

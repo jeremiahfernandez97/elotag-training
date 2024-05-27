@@ -1,12 +1,16 @@
 'use client'
 
-import { useState } from 'react'
 import { useCallback } from 'react'
 import { Todo } from '../types/todo'
 import { collection, addDoc } from 'firebase/firestore'
 import { app, db } from '../../firebase/firebase'
 import { getAuth } from 'firebase/auth'
 import { Box, FormControl, Input, Button, useToast } from '@chakra-ui/react'
+import { useForm } from "react-hook-form";
+
+interface TodoFormData {
+    todo: string;
+}
 
 const auth = getAuth(app)
 
@@ -19,7 +23,6 @@ export default function AddTodo({
     todos,
     setTodos,
 }: TodosProps) {
-    const [todoText, setTodoText] = useState('')
     const user = auth?.currentUser
     const toast = useToast()
 
@@ -28,10 +31,11 @@ export default function AddTodo({
             try {
                 await addDoc(collection(db, 'todos'), todo)
                 setTodos([...todos, todo])
+                reset();
             } catch (e) {
                 toast({
                     title: 'Error!',
-                    description: '' + e,
+                    description: 'Error adding todo: ' + e,
                     status: 'error',
                     duration: 9000,
                     isClosable: true,
@@ -48,10 +52,8 @@ export default function AddTodo({
         [addToTodosDb]
     )
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTodoText(e.target.value)
-    }
-    const handleClick = useCallback(() => {
+    const handleClick = useCallback((formData: TodoFormData) => {
+        const todoText = formData.todo;
         if (todoText.trim() != '') {
             addTodo({
                 id: todos.length,
@@ -59,21 +61,26 @@ export default function AddTodo({
                 done: false,
                 user: user?.email ?? '',
             })
-            setTodoText('')
         }
-    }, [addTodo, todoText, todos.length, user?.email])
+    }, [addTodo, todos.length, user?.email])
+
+    const { register, handleSubmit, reset } = useForm();
 
     return (
         <FormControl>
-            <Box display="flex">
-                <Input
-                    type="text"
-                    value={todoText}
-                    onChange={handleChange}
-                    mr="3"
-                    mb="10"
-                />
-                <Button onClick={handleClick}>Add todo</Button>
+            <Box 
+                display="flex" 
+                mr="3"
+                mb="10"
+            >
+                <form onSubmit={handleSubmit(handleClick)}>
+                    <Input
+                        {...register("todo")}
+                        type="text"
+                        style={{display:"inline"}}
+                    />
+                    <Button type="submit">Add todo</Button>
+                </form>
             </Box>
         </FormControl>
     )

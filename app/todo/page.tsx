@@ -15,8 +15,13 @@ import {
     Heading,
     useToast,
 } from '@chakra-ui/react'
+import ConfirmationModal from '../components/confirmation-modal'
+import { useDisclosure } from '@chakra-ui/react'
 
 export default function HomePage() {
+    const { isOpen, onOpen, onClose } = useDisclosure()
+    const [message, setMessage] = useState("");
+    const cancelRef = React.useRef()
     const [todos, setTodos] = useState<Todo[]>([])
     const auth = getAuth(app)
     const [user, error] = useAuthState(auth)
@@ -36,7 +41,7 @@ export default function HomePage() {
         } catch (e) {
             toast({
                 title: 'Error!',
-                description: '' + e,
+                description: 'Error signing out: ' + e,
                 status: 'error',
                 duration: 9000,
                 isClosable: true,
@@ -90,17 +95,20 @@ export default function HomePage() {
     }
 
     return (
-        <Container mt="20">
-            <Heading mb="3" color="#2F855A">Welcome, {user?.email}</Heading>
-            <Button mb="10" variant="link" onClick={handleSignOut}>
-                Sign out
-            </Button>
-            <AddTodo
-                todos={todos}
-                setTodos={setTodos}
-            />
-            <Todos todos={todos} setTodos={setTodos} />
-            {/* <div style={{ textDecoration: "italic" }}>{message}</div> */}
-        </Container>
+        <>
+            <Container mt="20">
+                <Heading mb="3" color="#2F855A">Welcome, {user?.email}</Heading>
+                <Button mb="10" variant="link" onClick={() => {onOpen(); setMessage('Are you sure you want to sign out of ' + user?.email + '?')}}>
+                    Sign out
+                </Button>
+                <AddTodo
+                    todos={todos}
+                    setTodos={setTodos}
+                />
+                <Todos todos={todos} setTodos={setTodos} />
+                {/* <div style={{ textDecoration: "italic" }}>{message}</div> */}
+            </Container>
+            <ConfirmationModal isOpen={isOpen} onClose={onClose} cancelRef={cancelRef}  onConfirm={() => handleSignOut()} action="Sign out" message={message}/>
+        </>
     )
 }

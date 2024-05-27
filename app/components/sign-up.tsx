@@ -1,5 +1,9 @@
 'use client'
 
+import React from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
     getAuth,
     createUserWithEmailAndPassword,
@@ -10,6 +14,7 @@ import { useRouter } from 'next/navigation'
 import { app, db } from '../../firebase/firebase'
 import { collection, addDoc } from 'firebase/firestore'
 import {
+    FormErrorMessage,
     FormControl,
     FormLabel,
     Input,
@@ -17,26 +22,38 @@ import {
     Heading,
     useToast,
 } from '@chakra-ui/react'
+import "../styles/input-no-focus.css";
+
+interface SignUpFormData {
+    email: string;
+    password: string;
+}
 
 const auth = getAuth(app)
 
+const schema = yup.object().shape({
+  email: yup.string().email().required(),
+  password: yup.string().min(6).max(32).required(),
+});
+
 export default function SignUp() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    // const [email, setEmail] = useState('')
+    // const [password, setPassword] = useState('')
     const router = useRouter()
     const toast = useToast()
 
-    const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setEmail(event.target.value)
-    }
+    // const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+    //     setEmail(event.target.value)
+    // }
 
-    const handleChangePassword = (
-        event: React.ChangeEvent<HTMLInputElement>
-    ) => {
-        setPassword(event.target.value)
-    }
+    // const handleChangePassword = (
+    //     event: React.ChangeEvent<HTMLInputElement>
+    // ) => {
+    //     setPassword(event.target.value)
+    // }
 
-    const handleSignUp = () => {
+    const handleSignUp = (formData: SignUpFormData) => {
+        const { email, password } = formData;
         signUp(email, password)
     }
 
@@ -78,12 +95,10 @@ export default function SignUp() {
                     .then(() => {
                         navigateToTodo()
                     })
-                    .catch((error) => {
-                        const errorCode = error.code
-                        const errorMessage = error.message
+                    .catch((e) => {
                         toast({
-                            title: 'Error!',
-                            description: errorCode + ': ' + errorMessage,
+                            title: 'Error',
+                            description: "Error on autologin: " + e,
                             status: 'error',
                             duration: 9000,
                             isClosable: true,
@@ -91,43 +106,63 @@ export default function SignUp() {
                     })
             })
             .catch((error) => {
-                const errorCode = error.code
-                const errorMessage = error.message
-                toast({
-                    title: 'Error!',
-                    description: errorCode + ': ' + errorMessage,
-                    status: 'error',
-                    duration: 9000,
-                    isClosable: true,
-                })
+                if (error.code == "auth/invalid-email") {
+                    toast({
+                        title: 'Error!',
+                        description: 'This email address is invalid',
+                        status: 'error',
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                }
+
+                if (error.code = "auth/email-already-in-use") {
+                    toast({
+                        title: 'Error!',
+                        description: 'This email address is already in use',
+                        status: 'error',
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                }
             })
     }
+
+    const { register, handleSubmit, formState: { errors }, reset } = useForm({
+      resolver: yupResolver(schema),
+    });
 
     return (
         <>
             <Heading color="#2F855A">Hello there!</Heading>
             <Heading mb="10">Create your todo list</Heading>
-            <FormControl isRequired>
-                <FormLabel>Email:</FormLabel>
-                <Input
-                    type="text"
-                    value={email}
-                    onChange={handleChangeEmail}
+            <form onSubmit={handleSubmit(handleSignUp)}>
+                <FormControl
+                    isInvalid={errors.email != undefined}
                     mb="10"
-                />
-            </FormControl>
-            <FormControl isRequired>
-                <FormLabel>Password:</FormLabel>
-                <Input
-                    type="password"
-                    value={password}
-                    onChange={handleChangePassword}
+                >
+                    <FormLabel>Email:</FormLabel>
+                    <Input
+                        {...register("email")}
+                        type="text"
+                    />
+                    <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+                </FormControl>
+                <FormControl
+                    isInvalid={errors.password != undefined}
                     mb="10"
-                />
-            </FormControl>
-            <Button onClick={handleSignUp} mb="10" color="#2F855A">
-                Sign up for an account
-            </Button>
+                >
+                    <FormLabel>Password:</FormLabel>
+                    <Input
+                        {...register("password")}
+                        type="password"
+                    />
+                    <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
+                </FormControl>
+                <Button mb="10" color="#2F855A" type="submit">
+                    Sign up for an account
+                </Button>
+            </form>
         </>
     )
 }
