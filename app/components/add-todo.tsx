@@ -6,10 +6,10 @@ import { collection, addDoc } from 'firebase/firestore'
 import { app, db } from '../../firebase/firebase'
 import { getAuth } from 'firebase/auth'
 import { Box, FormControl, Input, Button, useToast } from '@chakra-ui/react'
-import { useForm } from "react-hook-form";
+import { useForm } from 'react-hook-form'
 
 interface TodoFormData {
-    todo: string;
+    todo: string
 }
 
 const auth = getAuth(app)
@@ -19,10 +19,7 @@ type TodosProps = {
     setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
 }
 
-export default function AddTodo({
-    todos,
-    setTodos,
-}: TodosProps) {
+export default function AddTodo({ todos, setTodos }: TodosProps) {
     const user = auth?.currentUser
     const toast = useToast()
 
@@ -31,7 +28,7 @@ export default function AddTodo({
             try {
                 await addDoc(collection(db, 'todos'), todo)
                 setTodos([...todos, todo])
-                reset();
+                reset()
             } catch (e) {
                 toast({
                     title: 'Error!',
@@ -52,32 +49,31 @@ export default function AddTodo({
         [addToTodosDb]
     )
 
-    const handleClick = useCallback((formData: TodoFormData) => {
-        const todoText = formData.todo;
-        if (todoText.trim() != '') {
-            addTodo({
-                id: todos.length,
-                title: todoText.trim(),
-                done: false,
-                user: user?.email ?? '',
-            })
-        }
-    }, [addTodo, todos.length, user?.email])
+    const handleClick = useCallback(
+        (formData: Record<string, any>) => {
+            const todoText = formData.todo
+            if (todoText.trim() != '') {
+                addTodo({
+                    id: todos.length,
+                    title: todoText.trim(),
+                    done: false,
+                    user: user?.email ?? '',
+                })
+            }
+        },
+        [addTodo, todos.length, user?.email]
+    )
 
-    const { register, handleSubmit, reset } = useForm();
+    const { register, handleSubmit, reset } = useForm()
 
     return (
         <FormControl>
-            <Box 
-                display="flex" 
-                mr="3"
-                mb="10"
-            >
+            <Box display="flex" mr="3" mb="10">
                 <form onSubmit={handleSubmit(handleClick)}>
                     <Input
-                        {...register("todo")}
+                        {...register('todo')}
                         type="text"
-                        style={{display:"inline"}}
+                        style={{ display: 'inline' }}
                     />
                     <Button type="submit">Add todo</Button>
                 </form>

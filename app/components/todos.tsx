@@ -12,12 +12,7 @@ import {
     deleteDoc,
 } from 'firebase/firestore'
 import { getAuth } from 'firebase/auth'
-import {
-    Box,
-    ListItem,
-    UnorderedList,
-    Checkbox
-} from '@chakra-ui/react'
+import { Box, ListItem, UnorderedList, Checkbox } from '@chakra-ui/react'
 import { DeleteIcon } from '@chakra-ui/icons'
 import { IconButton } from '@chakra-ui/react'
 import { useDisclosure } from '@chakra-ui/react'
@@ -35,7 +30,7 @@ export default function Todos({ todos, setTodos }: TodosProps) {
     const cancelRef = React.useRef()
     const user = auth?.currentUser
     const [toDelete, setToDelete] = useState(0)
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState('')
 
     const deleteTodo = useCallback(
         async (id: number) => {
@@ -107,45 +102,64 @@ export default function Todos({ todos, setTodos }: TodosProps) {
     return (
         <>
             <UnorderedList styleType="none" m="0">
-                {
-                    todos.length != 0 ? (
-                        todos.map((todo) => (
+                {todos.length != 0 ? (
+                    todos.map(
+                        (todo) =>
                             !todo.done && (
                                 <ListItem key={todo.id}>
-                                    <Checkbox py="2" isChecked={todo.done} onChange={() => toggleTodo(todo.id)}>
-                                        <Box>
-                                            {todo.title}
-                                        </Box>
+                                    <Checkbox
+                                        py="2"
+                                        isChecked={todo.done}
+                                        onChange={() => toggleTodo(todo.id)}
+                                    >
+                                        <Box>{todo.title}</Box>
                                     </Checkbox>
                                     <Box
                                         py="1"
                                         style={{
                                             cursor: 'pointer',
-                                            float: 'right'
+                                            float: 'right',
                                         }}
-                                        onClick={() => {setToDelete(todo.id); setMessage('Are you sure you want to delete "' + todo.title + '"?')}}
+                                        onClick={() => {
+                                            setToDelete(todo.id)
+                                            setMessage(
+                                                'Are you sure you want to delete "' +
+                                                    todo.title +
+                                                    '"?'
+                                            )
+                                        }}
                                     >
-                                        <IconButton aria-label='Search database' icon={<DeleteIcon />} boxSize={8} onClick={onOpen} colorScheme='red'/>
+                                        <IconButton
+                                            aria-label="Search database"
+                                            icon={<DeleteIcon />}
+                                            boxSize={8}
+                                            onClick={onOpen}
+                                            colorScheme="red"
+                                        />
                                     </Box>
                                 </ListItem>
                             )
-                        ))
-                    ) : (
+                    )
+                ) : (
                     <i>Empty list, add todo to begin</i>
                 )}
             </UnorderedList>
-            
+
             <UnorderedList styleType="none" m="0">
-                {
-                    todos.length != 0 ? (
-                        todos.map((todo) => (
+                {todos.length != 0 ? (
+                    todos.map(
+                        (todo) =>
                             todo.done && (
                                 <ListItem key={todo.id}>
-                                    <Checkbox py="2" isChecked={todo.done} onChange={() => toggleTodo(todo.id)}>
+                                    <Checkbox
+                                        py="2"
+                                        isChecked={todo.done}
+                                        onChange={() => toggleTodo(todo.id)}
+                                    >
                                         <Box
                                             style={{
-                                                textDecoration:'line-through',
-                                                color: 'grey'
+                                                textDecoration: 'line-through',
+                                                color: 'grey',
                                             }}
                                         >
                                             {todo.title}
@@ -155,21 +169,41 @@ export default function Todos({ todos, setTodos }: TodosProps) {
                                         py="1"
                                         style={{
                                             cursor: 'pointer',
-                                            float: 'right'
+                                            float: 'right',
                                         }}
-                                        onClick={() => {setToDelete(todo.id); setMessage('Are you sure you want to delete "' + todo.title + '"?')}}
+                                        onClick={() => {
+                                            setToDelete(todo.id)
+                                            setMessage(
+                                                'Are you sure you want to delete "' +
+                                                    todo.title +
+                                                    '"?'
+                                            )
+                                        }}
                                     >
-                                        <IconButton aria-label='Search database' icon={<DeleteIcon />} boxSize={8} onClick={onOpen} colorScheme='red'/>
+                                        <IconButton
+                                            aria-label="Search database"
+                                            icon={<DeleteIcon />}
+                                            boxSize={8}
+                                            onClick={onOpen}
+                                            colorScheme="red"
+                                        />
                                     </Box>
                                 </ListItem>
                             )
-                        ))
-                    ) : (
+                    )
+                ) : (
                     <i>...</i>
                 )}
             </UnorderedList>
-            
-            <ConfirmationModal isOpen={isOpen} onClose={onClose} cancelRef={cancelRef}  onConfirm={() => deleteTodo(toDelete)} action="Delete todo" message={message}/>
+
+            <ConfirmationModal
+                isOpen={isOpen}
+                onClose={onClose}
+                cancelRef={cancelRef}
+                onConfirm={() => deleteTodo(toDelete)}
+                action="Delete todo"
+                message={message}
+            />
         </>
     )
 }
