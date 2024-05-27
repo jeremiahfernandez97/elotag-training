@@ -36,7 +36,7 @@ export default function HomePage() {
         } catch (e) {
             toast({
                 title: 'Error!',
-                description: '' + e,
+                description: 'Error signing out: ' + e,
                 status: 'error',
                 duration: 9000,
                 isClosable: true,

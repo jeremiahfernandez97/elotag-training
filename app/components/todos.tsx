@@ -35,6 +35,7 @@ export default function Todos({ todos, setTodos }: TodosProps) {
     const cancelRef = React.useRef()
     const user = auth?.currentUser
     const [toDelete, setToDelete] = useState(0)
+    const [message, setMessage] = useState("");
 
     const deleteTodo = useCallback(
         async (id: number) => {
@@ -109,36 +110,66 @@ export default function Todos({ todos, setTodos }: TodosProps) {
                 {
                     todos.length != 0 ? (
                         todos.map((todo) => (
-                            <ListItem key={todo.id}>
-                                <Checkbox py="2" isChecked={todo.done} onChange={() => toggleTodo(todo.id)}>
+                            !todo.done && (
+                                <ListItem key={todo.id}>
+                                    <Checkbox py="2" isChecked={todo.done} onChange={() => toggleTodo(todo.id)}>
+                                        <Box>
+                                            {todo.title}
+                                        </Box>
+                                    </Checkbox>
                                     <Box
+                                        py="1"
                                         style={{
-                                            textDecoration:
-                                                todo.done == true ? 'line-through' : 'none',
-                                            color:
-                                                todo.done == true ? 'grey' : 'black'
+                                            cursor: 'pointer',
+                                            float: 'right'
                                         }}
+                                        onClick={() => {setToDelete(todo.id); setMessage('Are you sure you want to delete "' + todo.title + '"?')}}
                                     >
-                                        {todo.title}
+                                        <IconButton aria-label='Search database' icon={<DeleteIcon />} boxSize={8} onClick={onOpen} colorScheme='red'/>
                                     </Box>
-                                </Checkbox>
-                                <Box
-                                    py="1"
-                                    style={{
-                                        cursor: 'pointer',
-                                        float: 'right'
-                                    }}
-                                    onClick={() => setToDelete(todo.id)}
-                                >
-                                    <IconButton aria-label='Search database' icon={<DeleteIcon />} boxSize={8} onClick={onOpen} colorScheme='red'/>
-                                </Box>
-                            </ListItem>
+                                </ListItem>
+                            )
                         ))
                     ) : (
                     <i>Empty list, add todo to begin</i>
                 )}
             </UnorderedList>
-            <ConfirmationModal isOpen={isOpen} onClose={onClose} cancelRef={cancelRef}  onConfirm={() => deleteTodo(toDelete)}/>
+            
+            <UnorderedList styleType="none" m="0">
+                {
+                    todos.length != 0 ? (
+                        todos.map((todo) => (
+                            todo.done && (
+                                <ListItem key={todo.id}>
+                                    <Checkbox py="2" isChecked={todo.done} onChange={() => toggleTodo(todo.id)}>
+                                        <Box
+                                            style={{
+                                                textDecoration:'line-through',
+                                                color: 'grey'
+                                            }}
+                                        >
+                                            {todo.title}
+                                        </Box>
+                                    </Checkbox>
+                                    <Box
+                                        py="1"
+                                        style={{
+                                            cursor: 'pointer',
+                                            float: 'right'
+                                        }}
+                                        onClick={() => {setToDelete(todo.id); setMessage('Are you sure you want to delete "' + todo.title + '"?')}}
+                                    >
+                                        <IconButton aria-label='Search database' icon={<DeleteIcon />} boxSize={8} onClick={onOpen} colorScheme='red'/>
+                                    </Box>
+                                </ListItem>
+                            )
+                        ))
+                    ) : (
+                    <i>...</i>
+                )}
+            </UnorderedList>
+            
+            <ConfirmationModal isOpen={isOpen} onClose={onClose} cancelRef={cancelRef}  onConfirm={() => deleteTodo(toDelete)} action="Delete todo" message={message}/>
         </>
     )
 }
