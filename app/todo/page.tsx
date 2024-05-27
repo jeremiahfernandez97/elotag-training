@@ -9,18 +9,13 @@ import { app, db } from '../../firebase/firebase'
 import { useRouter } from 'next/navigation'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import {
-    Container,
-    Button,
-    Heading,
-    useToast,
-} from '@chakra-ui/react'
+import { Container, Button, Heading, useToast } from '@chakra-ui/react'
 import ConfirmationModal from '../components/confirmation-modal'
 import { useDisclosure } from '@chakra-ui/react'
 
 export default function HomePage() {
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState('')
     const cancelRef = React.useRef()
     const [todos, setTodos] = useState<Todo[]>([])
     const auth = getAuth(app)
@@ -83,32 +78,45 @@ export default function HomePage() {
     })
 
     if (!user) {
-        return (
-            <Container mt="20">Loading..</Container>
-        )
+        return <Container mt="20">Loading..</Container>
     }
 
     if (error) {
-        return (
-            <Container mt="20">Error!</Container>
-        )
+        return <Container mt="20">Error!</Container>
     }
 
     return (
         <>
             <Container mt="20">
-                <Heading mb="3" color="#2F855A">Welcome, {user?.email}</Heading>
-                <Button mb="10" variant="link" onClick={() => {onOpen(); setMessage('Are you sure you want to sign out of ' + user?.email + '?')}}>
+                <Heading mb="3" color="#2F855A">
+                    Welcome, {user?.email}
+                </Heading>
+                <Button
+                    mb="10"
+                    variant="link"
+                    onClick={() => {
+                        onOpen()
+                        setMessage(
+                            'Are you sure you want to sign out of ' +
+                                user?.email +
+                                '?'
+                        )
+                    }}
+                >
                     Sign out
                 </Button>
-                <AddTodo
-                    todos={todos}
-                    setTodos={setTodos}
-                />
+                <AddTodo todos={todos} setTodos={setTodos} />
                 <Todos todos={todos} setTodos={setTodos} />
                 {/* <div style={{ textDecoration: "italic" }}>{message}</div> */}
             </Container>
-            <ConfirmationModal isOpen={isOpen} onClose={onClose} cancelRef={cancelRef}  onConfirm={() => handleSignOut()} action="Sign out" message={message}/>
+            <ConfirmationModal
+                isOpen={isOpen}
+                onClose={onClose}
+                cancelRef={cancelRef}
+                onConfirm={() => handleSignOut()}
+                action="Sign out"
+                message={message}
+            />
         </>
     )
 }
