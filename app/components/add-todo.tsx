@@ -76,7 +76,6 @@ export default function AddTodo({
                 <form onSubmit={handleSubmit(handleClick)}>
                     <Input
                         {...register("todo")}
-                        // name="todo"
                         type="text"
                         style={{display:"inline"}}
                     />
