@@ -65,9 +65,10 @@ export default function AddTodo({ todos, setTodos }: TodosProps) {
 
     return (
         <FormControl>
-            <Box display="flex" mr="3" mb="10">
-                <form onSubmit={handleSubmit(handleClick)}>
+            <Box display="flex" mb="10">
+                <form onSubmit={handleSubmit(handleClick)} style={{display:"flex", width:"100%"}}>
                     <Input
+                        mr="3"
                         {...register('todo')}
                         type="text"
                         style={{ display: 'inline' }}
