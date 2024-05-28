@@ -10,7 +10,6 @@ export default function HomePage() {
         <Center h="90vh">
             <Container textAlign="center">
                 <SignUp />
-                <br />
                 <Link href="/login">or Sign in to your todo list</Link>
             </Container>
         </Center>
