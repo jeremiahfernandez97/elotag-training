@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Todo } from '../types/todo'
 import { collection, addDoc } from 'firebase/firestore'
 import { app, db } from '../../firebase/firebase'
@@ -16,23 +16,23 @@ type TodosProps = {
 }
 
 export default function AddTodo({ todos, setTodos }: TodosProps) {
+    const [loading, setLoading] = useState(false)
     const user = auth?.currentUser
     const toast = useToast()
 
     const addToTodosDb = useCallback(
         async (todo: Todo) => {
             try {
-                await addDoc(collection(db, 'todos'), todo)
-                setTodos([...todos, todo])
-                reset()
+                setLoading(true)
+                addDoc(collection(db, 'todos'), todo)
+                .then( ()=>{
+                    setTodos([...todos, todo])
+                    reset()
+                })
+                .finally(() => {
+                    setLoading(false)
+                })
             } catch (e) {
-                // toast({
-                //     title: 'Error!',
-                //     description: 'Error adding todo: ' + e,
-                //     status: 'error',
-                //     duration: 9000,
-                //     isClosable: true,
-                // })
                 console.log(e);
             }
         },
@@ -73,7 +73,7 @@ export default function AddTodo({ todos, setTodos }: TodosProps) {
                         type="text"
                         style={{ display: 'inline' }}
                     />
-                    <Button type="submit">Add todo</Button>
+                    <Button type="submit" isDisabled={loading}>Add todo</Button>
                 </form>
             </Box>
         </FormControl>
