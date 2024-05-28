@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { auth } from '../../firebase/firebase'
 import { useRouter } from 'next/navigation'
 import {
@@ -33,6 +33,7 @@ const schema = yup.object().shape({
 })
 
 export default function SignIn() {
+    const [loading, setLoading] = useState(false)
     const router = useRouter()
     const toast = useToast()
 
@@ -46,6 +47,7 @@ export default function SignIn() {
     }, [router])
 
     const signIn = (email: string, password: string) => {
+        setLoading(true)
         signInWithEmailAndPassword(auth, email, password)
             .then(() => {
                 navigateToTodo()
@@ -66,6 +68,9 @@ export default function SignIn() {
                     duration: 9000,
                     isClosable: true,
                 })
+            })
+            .finally(() => {
+                setLoading(false)
             })
     }
 
@@ -103,7 +108,7 @@ export default function SignIn() {
                                 {errors.password?.message}
                             </FormErrorMessage>
                         </FormControl>
-                        <Button mb="10" type="submit">
+                        <Button mb="10" type="submit" isDisabled={loading}>
                             Sign In
                         </Button>
                     </form>

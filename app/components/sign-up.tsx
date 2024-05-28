@@ -9,7 +9,7 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
 } from 'firebase/auth'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { app, db } from '../../firebase/firebase'
 import { collection, addDoc } from 'firebase/firestore'
@@ -37,20 +37,9 @@ const schema = yup.object().shape({
 })
 
 export default function SignUp() {
-    // const [email, setEmail] = useState('')
-    // const [password, setPassword] = useState('')
+    const [loading, setLoading] = useState(false)
     const router = useRouter()
     const toast = useToast()
-
-    // const handleChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-    //     setEmail(event.target.value)
-    // }
-
-    // const handleChangePassword = (
-    //     event: React.ChangeEvent<HTMLInputElement>
-    // ) => {
-    //     setPassword(event.target.value)
-    // }
 
     const handleSignUp = (formData: SignUpFormData) => {
         const { email, password } = formData
@@ -71,13 +60,6 @@ export default function SignUp() {
                 isClosable: true,
             })
         } catch (e) {
-            // toast({
-            //     title: 'Error!',
-            //     description: 'Error adding document: ' + e,
-            //     status: 'error',
-            //     duration: 9000,
-            //     isClosable: true,
-            // })
             console.log(e);
         }
     }
@@ -87,6 +69,7 @@ export default function SignUp() {
     }, [router])
 
     const signUp = (email: string, password: string) => {
+        setLoading(true)
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user
@@ -97,14 +80,10 @@ export default function SignUp() {
                         navigateToTodo()
                     })
                     .catch((e) => {
-                        // toast({
-                        //     title: 'Error',
-                        //     description: 'Error on autologin: ' + e,
-                        //     status: 'error',
-                        //     duration: 9000,
-                        //     isClosable: true,
-                        // })
                         console.log(e);
+                    })
+                    .finally(() => {
+                        setLoading(false)
                     })
             })
             .catch((error) => {
@@ -127,6 +106,9 @@ export default function SignUp() {
                         isClosable: true,
                     })
                 }
+            })
+            .finally(() => {
+                setLoading(false)
             })
     }
 
@@ -155,7 +137,7 @@ export default function SignUp() {
                         {errors.password?.message}
                     </FormErrorMessage>
                 </FormControl>
-                <Button mb="10" color="#2F855A" type="submit">
+                <Button mb="10" color="#2F855A" type="submit" isDisabled={loading}>
                     Sign up for an account
                 </Button>
             </form>
