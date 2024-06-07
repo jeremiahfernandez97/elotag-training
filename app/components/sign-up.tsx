@@ -59,8 +59,14 @@ export default function SignUp() {
                 duration: 9000,
                 isClosable: true,
             })
-        } catch (e) {
-            console.log(e);
+        } catch (error) {
+            toast({
+                title: 'Internal Error',
+                description: '' + error,
+                status: 'error',
+                duration: 9000,
+                isClosable: true,
+            })
         }
     }
 
@@ -79,8 +85,14 @@ export default function SignUp() {
                     .then(() => {
                         navigateToTodo()
                     })
-                    .catch((e) => {
-                        console.log(e);
+                    .catch((error) => {
+                        toast({
+                            title: 'Internal Error',
+                            description: '' + error,
+                            status: 'error',
+                            duration: 9000,
+                            isClosable: true,
+                        })
                     })
                     .finally(() => {
                         setLoading(false)
@@ -95,12 +107,18 @@ export default function SignUp() {
                         duration: 9000,
                         isClosable: true,
                     })
-                }
-
-                if ((error.code == 'auth/email-already-in-use')) {
+                } else if ((error.code == 'auth/email-already-in-use')) {
                     toast({
                         title: 'Error!',
                         description: 'This email address is already in use',
+                        status: 'error',
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                } else {
+                    toast({
+                        title: 'Internal Error',
+                        description: '' + error,
                         status: 'error',
                         duration: 9000,
                         isClosable: true,

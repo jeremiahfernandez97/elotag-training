@@ -52,6 +52,7 @@ export default function SignIn() {
             .then(() => {
                 navigateToTodo()
                 toast({
+                    position: 'top',
                     title: 'Success!',
                     description: 'Signed in',
                     status: 'success',
