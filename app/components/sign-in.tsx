@@ -6,7 +6,7 @@ import * as yup from 'yup'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useCallback } from 'react'
-import { auth } from '../../firebase/firebase'
+import { app } from '../../firebase/firebase'
 import { useRouter } from 'next/navigation'
 import {
     Box,
@@ -21,6 +21,7 @@ import {
     useToast,
 } from '@chakra-ui/react'
 import { Link } from '@chakra-ui/next-js'
+import { getAuth } from 'firebase/auth'
 
 interface SignInFormData {
     email: string
@@ -35,6 +36,7 @@ const schema = yup.object().shape({
 export default function SignIn() {
     const router = useRouter()
     const toast = useToast()
+    const auth = getAuth(app)
 
     const handleSignIn = (formData: SignInFormData) => {
         const { email, password } = formData
@@ -47,15 +49,29 @@ export default function SignIn() {
 
     const signIn = (email: string, password: string) => {
         signInWithEmailAndPassword(auth, email, password)
-            .then(() => {
-                navigateToTodo()
-                toast({
-                    title: 'Success!',
-                    description: 'Signed in',
-                    status: 'success',
-                    duration: 9000,
-                    isClosable: true,
-                })
+            .then((userCredential) => {
+                const user = userCredential.user
+                if (user.emailVerified) {
+                    navigateToTodo()
+                    toast({
+                        title: 'Success!',
+                        description: 'Signed in',
+                        status: 'success',
+                        duration: 9000,
+                        isClosable: true,
+                    })
+                } else {
+                    auth.signOut()
+                    .then(()=>{
+                        toast({
+                            title: 'Error!',
+                            description: 'Please verify ' + user.email,
+                            status: 'error',
+                            duration: 9000,
+                            isClosable: true,
+                        })
+                    })
+                }
             })
             .catch(() => {
                 toast({

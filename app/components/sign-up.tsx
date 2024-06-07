@@ -8,6 +8,7 @@ import {
     getAuth,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
+    sendEmailVerification,
 } from 'firebase/auth'
 import { useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -63,13 +64,6 @@ export default function SignUp() {
                 email: user.email,
                 uid: user.uid,
             })
-            toast({
-                title: 'Success!',
-                description: user.email + ' signed up successfully',
-                status: 'success',
-                duration: 9000,
-                isClosable: true,
-            })
         } catch (e) {
             // toast({
             //     title: 'Error!',
@@ -86,26 +80,61 @@ export default function SignUp() {
         router.push('/todo')
     }, [router])
 
+    const navigateToLogin = useCallback(() => {
+        router.push('/login')
+    }, [router])
+
+    const userCheck = (email: string, password: string) => {
+        signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user
+            console.log(user)
+        })
+    }
+
     const signUp = (email: string, password: string) => {
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 const user = userCredential.user
                 addToUsersDb(user)
 
-                signInWithEmailAndPassword(auth, email, password)
-                    .then(() => {
-                        navigateToTodo()
+                console.log(user);
+
+                sendEmailVerification(user)
+                .then(()=>{
+                    navigateToLogin()
+                    toast({
+                        title: 'Success',
+                        description: "A verification link has been sent to " + user.email,
+                        status: 'success',
+                        duration: 9000,
+                        isClosable: true,
                     })
-                    .catch((e) => {
-                        // toast({
-                        //     title: 'Error',
-                        //     description: 'Error on autologin: ' + e,
-                        //     status: 'error',
-                        //     duration: 9000,
-                        //     isClosable: true,
-                        // })
-                        console.log(e);
+                })
+                .catch((e) => {
+                    toast({
+                        title: 'Internal error',
+                        description: e,
+                        status: 'error',
+                        duration: 9000,
+                        isClosable: true,
                     })
+                })
+
+                // signInWithEmailAndPassword(auth, email, password)
+                //     .then(() => {
+                //         navigateToTodo()
+                //     })
+                //     .catch((e) => {
+                //         // toast({
+                //         //     title: 'Error',
+                //         //     description: 'Error on autologin: ' + e,
+                //         //     status: 'error',
+                //         //     duration: 9000,
+                //         //     isClosable: true,
+                //         // })
+                //         console.log(e);
+                //     })
             })
             .catch((error) => {
                 if (error.code == 'auth/invalid-email') {
