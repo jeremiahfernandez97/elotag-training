@@ -63,6 +63,7 @@ export default function HomePage() {
             })
             queriedTodos.sort((a, b) => a.id - b.id)
             setTodos(queriedTodos)
+            console.log(querySnapshot)
         }
     }, [user?.email])
 
